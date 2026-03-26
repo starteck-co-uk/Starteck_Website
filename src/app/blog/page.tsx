@@ -4,36 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Calendar, Clock } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
-
-const blogPosts = [
-  {
-    slug: "why-offline-rag-matters",
-    title: "Why Offline RAG Matters for Enterprise Security",
-    excerpt:
-      "As enterprises rush to adopt AI, data security becomes the defining challenge. Here's why offline RAG systems are the gold standard for sensitive environments.",
-    date: "2026-03-15",
-    readTime: "5 min read",
-    tags: ["RAG", "Security", "Enterprise AI"],
-  },
-  {
-    slug: "agentic-ai-beyond-chatbots",
-    title: "Agentic AI: Moving Beyond Simple Chatbots",
-    excerpt:
-      "The next wave of AI isn't about chat interfaces — it's about autonomous agents that reason, plan, and execute complex multi-step workflows.",
-    date: "2026-03-01",
-    readTime: "7 min read",
-    tags: ["Agentic AI", "Automation", "LLMs"],
-  },
-  {
-    slug: "building-ai-dashboards-that-matter",
-    title: "Building AI Dashboards That Actually Drive Decisions",
-    excerpt:
-      "Most dashboards are glorified spreadsheets. Here's our approach to building intelligence-driven interfaces that leadership actually uses.",
-    date: "2026-02-20",
-    readTime: "6 min read",
-    tags: ["Dashboards", "UX", "Data Visualization"],
-  },
-];
+import { blogPosts } from "@/data/blog";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-GB", {
