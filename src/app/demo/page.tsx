@@ -6,35 +6,31 @@ import { Calendar, Video, Bot, LayoutDashboard, ChevronRight, Play, Loader2, Che
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 
 // ─── AI Video Generator Demo ───────────────────────────────────────────────
+// Prompt options — replace labels with your actual prompts later
+const promptOptions = [
+  { id: "prompt-1", label: "Placeholder prompt 1", videoUrl: "" },
+  { id: "prompt-2", label: "Placeholder prompt 2", videoUrl: "" },
+  { id: "prompt-3", label: "Placeholder prompt 3", videoUrl: "" },
+  { id: "prompt-4", label: "Placeholder prompt 4", videoUrl: "" },
+  { id: "prompt-5", label: "Placeholder prompt 5", videoUrl: "" },
+  { id: "prompt-6", label: "Placeholder prompt 6", videoUrl: "" },
+];
+
 function AIVideoDemo() {
-  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
-  const [prompt, setPrompt] = useState("");
+  const [selectedPrompt, setSelectedPrompt] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "generating" | "done">("idle");
   const [generatedVideo, setGeneratedVideo] = useState<string | null>(null);
 
-  const styles = [
-    { id: "cinematic", label: "Cinematic", icon: "🎬" },
-    { id: "corporate", label: "Corporate", icon: "🏢" },
-    { id: "animated", label: "Animated", icon: "✨" },
-    { id: "documentary", label: "Documentary", icon: "📽️" },
-  ];
-
-  // Pre-generated video slots — replace these src values with actual video URLs
-  const videoMap: Record<string, string> = {
-    cinematic: "",
-    corporate: "",
-    animated: "",
-    documentary: "",
-  };
-
   const handleGenerate = () => {
-    if (!selectedStyle || !prompt.trim()) return;
+    if (!selectedPrompt) return;
     setStatus("generating");
     setGeneratedVideo(null);
 
-    // Simulate generation with progressive steps
+    const chosen = promptOptions.find((p) => p.id === selectedPrompt);
+
+    // Simulate generation delay
     setTimeout(() => {
-      setGeneratedVideo(videoMap[selectedStyle] || "");
+      setGeneratedVideo(chosen?.videoUrl || "");
       setStatus("done");
     }, 4000);
   };
@@ -46,40 +42,32 @@ function AIVideoDemo() {
         <h3 className="font-serif text-2xl text-gold-light">AI Video Generator</h3>
       </div>
       <p className="text-text-muted text-sm mb-6">
-        Select a style, describe your video, and watch as our AI generates it in moments.
+        Choose a prompt and watch as our AI generates the video in moments.
       </p>
 
-      {/* Style Selection */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        {styles.map((style) => (
+      {/* Prompt Options */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+        {promptOptions.map((option) => (
           <button
-            key={style.id}
-            onClick={() => setSelectedStyle(style.id)}
-            className={`p-4 rounded-xl border text-center transition-all ${
-              selectedStyle === style.id
+            key={option.id}
+            onClick={() => { setSelectedPrompt(option.id); setStatus("idle"); }}
+            className={`p-4 rounded-xl border text-left transition-all ${
+              selectedPrompt === option.id
                 ? "border-gold bg-gold/10 text-gold-light"
                 : "border-navy-700 bg-navy-900/50 text-text-muted hover:border-gold/50"
             }`}
           >
-            <div className="text-2xl mb-1">{style.icon}</div>
-            <div className="text-sm font-medium">{style.label}</div>
+            <div className="text-sm font-medium">{option.label}</div>
           </button>
         ))}
       </div>
 
-      {/* Prompt Input */}
-      <div className="flex gap-3 mb-6">
-        <input
-          type="text"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Describe your video... e.g. 'A futuristic office with AI robots collaborating'"
-          className="flex-1 bg-navy-900/80 border border-navy-700 rounded-xl px-4 py-3 text-text-main placeholder:text-text-muted/50 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/30 transition-colors text-sm"
-        />
+      {/* Generate Button */}
+      <div className="mb-6">
         <button
           onClick={handleGenerate}
-          disabled={!selectedStyle || !prompt.trim() || status === "generating"}
-          className="bg-gradient-to-r from-gold-light to-gold-dark text-navy-950 px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
+          disabled={!selectedPrompt || status === "generating"}
+          className="w-full sm:w-auto bg-gradient-to-r from-gold-light to-gold-dark text-navy-950 px-8 py-3 rounded-xl font-semibold transition-all hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
         >
           {status === "generating" ? (
             <>
@@ -87,7 +75,7 @@ function AIVideoDemo() {
             </>
           ) : (
             <>
-              <Play size={16} /> Generate
+              <Play size={16} /> Generate Video
             </>
           )}
         </button>
@@ -98,7 +86,7 @@ function AIVideoDemo() {
         {status === "idle" && (
           <div className="text-center text-text-muted/50 p-8">
             <Video className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="text-sm">Select a style and enter a prompt to generate your video</p>
+            <p className="text-sm">Select a prompt above and hit Generate</p>
           </div>
         )}
 
@@ -135,7 +123,7 @@ function AIVideoDemo() {
                   Video preview slot — add pre-generated video URLs to display here.
                 </p>
                 <button
-                  onClick={() => { setStatus("idle"); setPrompt(""); setSelectedStyle(null); }}
+                  onClick={() => { setStatus("idle"); setSelectedPrompt(null); }}
                   className="mt-4 text-gold text-sm hover:text-gold-light transition-colors"
                 >
                   Generate another
