@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Logo from "@/components/ui/Logo";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 
 export default function HeroSection() {
@@ -14,13 +13,9 @@ export default function HeroSection() {
         animate="visible"
         className="flex flex-col items-center"
       >
-        <motion.div variants={fadeInUp}>
-          <Logo size="lg" />
-        </motion.div>
-
         <motion.h1
           variants={fadeInUp}
-          className="font-serif text-4xl md:text-6xl lg:text-7xl max-w-4xl mt-8 leading-[1.1]"
+          className="font-serif text-4xl md:text-6xl lg:text-7xl max-w-4xl leading-[1.1]"
         >
           <span className="gold-text">Customized AI Products.</span>
           <br />

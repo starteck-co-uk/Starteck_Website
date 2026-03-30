@@ -9,8 +9,8 @@ interface LogoProps {
 }
 
 const sizeMap = {
-  sm: { height: 50, width: 50, pad: 8 },
-  md: { height: 70, width: 70, pad: 12 },
+  sm: { height: 70, width: 70, pad: 10 },
+  md: { height: 90, width: 90, pad: 12 },
   lg: { height: 140, width: 140, pad: 20 },
 };
 
