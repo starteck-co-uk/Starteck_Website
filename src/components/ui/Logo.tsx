@@ -9,26 +9,36 @@ interface LogoProps {
 }
 
 const sizeMap = {
-  sm: { height: 50, width: 50 },
-  md: { height: 70, width: 70 },
-  lg: { height: 140, width: 140 },
+  sm: { height: 50, width: 50, pad: 8 },
+  md: { height: 70, width: 70, pad: 12 },
+  lg: { height: 140, width: 140, pad: 20 },
 };
 
 export default function Logo({ size = "md", className = "" }: LogoProps) {
   const dims = sizeMap[size];
   return (
     <Link href="/" className={`flex items-center gap-3 ${className}`}>
-      <Image
-        src="/images/logo/StarTeck_logo_transparent.png"
-        alt="StarTeck"
-        width={dims.width}
-        height={dims.height}
-        className="object-contain"
+      <div
+        className="relative flex items-center justify-center rounded-2xl"
         style={{
-          filter: "drop-shadow(0 0 2px rgba(255,255,255,0.15)) drop-shadow(0 0 8px rgba(217,165,92,0.3))",
+          padding: dims.pad,
+          background:
+            "radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 50%, transparent 75%)",
         }}
-        priority
-      />
+      >
+        <Image
+          src="/images/logo/StarTeck_logo_transparent.png"
+          alt="StarTeck"
+          width={dims.width}
+          height={dims.height}
+          className="object-contain"
+          style={{
+            filter:
+              "brightness(1.3) drop-shadow(0 0 1px rgba(255,255,255,0.2)) drop-shadow(0 0 6px rgba(217,165,92,0.25))",
+          }}
+          priority
+        />
+      </div>
     </Link>
   );
 }
