@@ -31,7 +31,7 @@ export default function Navbar() {
           : "bg-gradient-to-b from-navy-950/95 to-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-24">
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-32">
         <Logo size="sm" />
 
         {/* Desktop Nav */}
