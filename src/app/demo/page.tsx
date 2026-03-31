@@ -1,12 +1,19 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar, Video, Bot, LayoutDashboard, ChevronRight, Play, Loader2,
   CheckCircle, Sparkles, Send, Clock, User, TrendingUp, Activity,
   Shield, Database, ArrowUpRight, ArrowDownRight, ChevronLeft,
+  Users, Wallet, ClipboardCheck, Plus, X, Bell, Search, FileText,
+  PenTool, DollarSign, AlertCircle, UserCheck, Settings, Settings2,
+  Menu as MenuIcon, Lock, ChevronDown,
 } from "lucide-react";
+import {
+  ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis,
+  Tooltip, PieChart, Pie, Cell, Legend, LineChart, Line,
+} from "recharts";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 
 // ─── AI Video Generator Demo ───────────────────────────────────────────────
@@ -115,171 +122,517 @@ function AIVideoDemo() {
   );
 }
 
-// ─── Smart Booking System ───────────────────────────────────────────────────
-const timeSlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30"];
-const services = [
-  { id: "consultation", label: "AI Strategy Consultation", duration: "30 min", icon: "💡" },
-  { id: "demo", label: "Product Demo", duration: "45 min", icon: "🖥️" },
-  { id: "technical", label: "Technical Assessment", duration: "60 min", icon: "⚙️" },
-  { id: "workshop", label: "AI Workshop", duration: "90 min", icon: "🎓" },
+// ─── CRM Dashboard Demo (Cosmetic Star) ────────────────────────────────────
+
+const CRM_COLORS = ["#0d9488", "#6366f1", "#10b981", "#f59e0b"];
+
+const crmRevenueData = [
+  { date: "Mon", amount: 4200 },
+  { date: "Tue", amount: 5800 },
+  { date: "Wed", amount: 3900 },
+  { date: "Thu", amount: 7200 },
+  { date: "Fri", amount: 6100 },
+  { date: "Sat", amount: 8400 },
+  { date: "Sun", amount: 5300 },
 ];
 
+const crmDistribution = [
+  { name: "Consultation", value: 35 },
+  { name: "Pre-Op", value: 25 },
+  { name: "Surgery", value: 22 },
+  { name: "Post-Op", value: 18 },
+];
+
+const crmActivityData = [
+  { patients: 12, bookings: 8 },
+  { patients: 15, bookings: 11 },
+  { patients: 9, bookings: 14 },
+  { patients: 18, bookings: 10 },
+  { patients: 14, bookings: 16 },
+  { patients: 20, bookings: 13 },
+  { patients: 16, bookings: 18 },
+];
+
+const crmAppointments = [
+  { name: "Sarah Johnson", service: "Rhinoplasty Consultation", time: "09:00 AM", status: "Confirmed" },
+  { name: "Michael Chen", service: "Blepharoplasty Review", time: "10:30 AM", status: "In Review" },
+  { name: "Emily Watson", service: "Facelift Pre-Op", time: "11:00 AM", status: "Confirmed" },
+  { name: "James Rodriguez", service: "Liposuction Follow-Up", time: "02:00 PM", status: "Pending" },
+  { name: "Amara Okafor", service: "Breast Augmentation Consult", time: "03:30 PM", status: "Confirmed" },
+];
+
+const crmPendingBreakdown = {
+  missingIntake: [
+    { id: 1, name: "David Patel" },
+    { id: 2, name: "Lisa Montgomery" },
+    { id: 3, name: "Robert Kim" },
+  ],
+  complianceGap: [
+    { id: 1, name: "Sarah Johnson", service: "Rhinoplasty" },
+    { id: 2, name: "Tom Bradley", service: "Blepharoplasty" },
+  ],
+  unpaidBalances: [
+    { id: 1, name: "Michael Chen", balance: 2400 },
+    { id: 2, name: "Emma Sullivan", balance: 1850 },
+  ],
+  postOpFollowups: [
+    { id: 1, name: "James Rodriguez", service: "Liposuction", date: "28 Mar" },
+    { id: 2, name: "Nina Kowalski", service: "Abdominoplasty", date: "30 Mar" },
+  ],
+  bookingBottleneck: [
+    { id: 1, name: "Chris Evans" },
+    { id: 2, name: "Diana Prince" },
+  ],
+};
+
+const crmNavItems = [
+  { name: "Dashboard", icon: LayoutDashboard, active: true },
+  { name: "Patients", icon: Users },
+  { name: "Assessment", icon: ClipboardCheck, locked: true },
+  { name: "Treatments", icon: FileText, locked: true },
+  { name: "Contract", icon: PenTool, locked: true },
+  { name: "Calendar", icon: Calendar, locked: true },
+  { name: "Financials", icon: DollarSign, locked: true },
+  { name: "Service Manager", icon: Settings2, admin: true },
+  { name: "Form Designer", icon: ClipboardCheck, admin: true },
+  { name: "Settings", icon: Settings, admin: true },
+];
+
+function StarIcon({ className, size }: { className?: string; size?: number }) {
+  return (
+    <svg width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
+
 function BookingSystemDemo() {
-  const [selectedService, setSelectedService] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState<number | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [booked, setBooked] = useState(false);
+  const [isPendingModalOpen, setIsPendingModalOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeNav, setActiveNav] = useState("Dashboard");
 
-  const today = new Date();
-  const days = Array.from({ length: 14 }, (_, i) => {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i + 1);
-    return d;
-  });
+  const statCards = [
+    { label: "Total Patients", value: "1,247", change: "+12.5%", up: true, icon: Users, color: "teal" },
+    { label: "Surgery Bookings", value: "38", change: "Live", up: true, icon: Calendar, color: "indigo" },
+    { label: "Monthly Revenue", value: "\u00A312,840", change: "+8.2%", up: true, icon: Wallet, color: "emerald" },
+    { label: "Pending Reports", value: "9", change: "Urgent", up: false, icon: ClipboardCheck, color: "amber", onClick: () => setIsPendingModalOpen(true) },
+  ];
 
-  // Simulate some slots as unavailable
-  const unavailable = new Set(["09:00", "11:00", "14:00"]);
-
-  const handleBook = () => {
-    if (selectedService && selectedDate !== null && selectedTime) {
-      setBooked(true);
-    }
-  };
-
-  const handleReset = () => {
-    setSelectedService(null);
-    setSelectedDate(null);
-    setSelectedTime(null);
-    setBooked(false);
+  const colorClass = (color: string, type: "bg" | "text") => {
+    const map: Record<string, Record<string, string>> = {
+      teal: { bg: "bg-teal-50 text-teal-600", text: "text-teal-600" },
+      indigo: { bg: "bg-indigo-50 text-indigo-600", text: "text-indigo-600" },
+      emerald: { bg: "bg-emerald-50 text-emerald-600", text: "text-emerald-600" },
+      amber: { bg: "bg-amber-50 text-amber-600", text: "text-amber-600" },
+    };
+    return map[color]?.[type] || "";
   };
 
   return (
-    <div className="glass-card p-8 md:p-10">
-      <div className="flex items-center gap-3 mb-6">
+    <div className="glass-card p-0 overflow-hidden">
+      {/* Header label */}
+      <div className="px-8 pt-8 pb-4 border-b border-navy-700/50 flex items-center gap-3">
         <Calendar className="w-6 h-6 text-gold" />
         <h3 className="font-serif text-2xl text-gold-light">Smart Booking System</h3>
       </div>
-      <p className="text-text-muted text-sm mb-6">
-        AI-powered scheduling with conflict detection and smart availability. Try booking a session below.
+      <p className="text-text-muted text-sm px-8 pt-4 pb-2">
+        A full-stack clinic management CRM we built — patient workflows, real-time analytics, and scheduling in one unified dashboard.
       </p>
 
-      {booked ? (
-        <div className="rounded-xl border border-gold/30 bg-navy-900/60 p-8 text-center">
-          <CheckCircle className="w-14 h-14 text-gold mx-auto mb-4" />
-          <h4 className="font-serif text-xl text-gold-light mb-2">Booking Confirmed!</h4>
-          <p className="text-text-muted text-sm mb-1">
-            {services.find((s) => s.id === selectedService)?.label}
-          </p>
-          <p className="text-text-muted text-sm mb-1">
-            {selectedDate !== null && days[selectedDate].toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
-          </p>
-          <p className="text-gold font-medium">{selectedTime}</p>
-          <p className="text-text-muted/50 text-xs mt-4">A confirmation email would be sent to your inbox.</p>
-          <button onClick={handleReset} className="mt-6 text-gold text-sm hover:text-gold-light transition-colors">
-            Book another session
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {/* Step 1: Service */}
-          <div>
-            <p className="text-text-muted text-xs uppercase tracking-wider mb-3 font-medium">1. Select a service</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {services.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => setSelectedService(s.id)}
-                  className={`p-4 rounded-xl border text-left transition-all flex items-center gap-3 ${
-                    selectedService === s.id
-                      ? "border-gold bg-gold/10"
-                      : "border-navy-700 bg-navy-900/50 hover:border-gold/50"
-                  }`}
-                >
-                  <span className="text-2xl">{s.icon}</span>
-                  <div>
-                    <div className={`text-sm font-medium ${selectedService === s.id ? "text-gold-light" : "text-text-main"}`}>{s.label}</div>
-                    <div className="text-xs text-text-muted flex items-center gap-1"><Clock size={10} /> {s.duration}</div>
-                  </div>
-                </button>
-              ))}
+      {/* CRM Dashboard Container */}
+      <div className="m-4 md:m-6 rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 flex" style={{ minHeight: 700 }}>
+        {/* Sidebar */}
+        <aside className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:static inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transition-transform duration-300 md:rounded-l-2xl`}>
+          <div className="flex h-16 items-center px-6 border-b border-slate-800 shrink-0">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 bg-gradient-to-br from-teal-400 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/20">
+                <StarIcon className="text-white fill-white" size={20} />
+              </div>
+              <span className="text-base font-black tracking-tight text-white uppercase italic">Cosmetic <span className="text-teal-400">Star</span></span>
             </div>
           </div>
 
-          {/* Step 2: Date */}
-          {selectedService && (
-            <div>
-              <p className="text-text-muted text-xs uppercase tracking-wider mb-3 font-medium">2. Choose a date</p>
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {days.map((d, i) => {
-                  const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-                  return (
-                    <button
-                      key={i}
-                      disabled={isWeekend}
-                      onClick={() => { setSelectedDate(i); setSelectedTime(null); }}
-                      className={`flex-shrink-0 w-16 py-3 rounded-xl border text-center transition-all ${
-                        isWeekend
-                          ? "border-navy-800 bg-navy-950/30 opacity-30 cursor-not-allowed"
-                          : selectedDate === i
-                          ? "border-gold bg-gold/10"
-                          : "border-navy-700 bg-navy-900/50 hover:border-gold/50"
-                      }`}
-                    >
-                      <div className={`text-xs ${selectedDate === i ? "text-gold" : "text-text-muted"}`}>
-                        {d.toLocaleDateString("en-GB", { weekday: "short" })}
-                      </div>
-                      <div className={`text-lg font-semibold ${selectedDate === i ? "text-gold-light" : "text-text-main"}`}>
-                        {d.getDate()}
-                      </div>
-                      <div className={`text-xs ${selectedDate === i ? "text-gold" : "text-text-muted"}`}>
-                        {d.toLocaleDateString("en-GB", { month: "short" })}
-                      </div>
-                    </button>
-                  );
-                })}
+          {/* Demo patient banner */}
+          <div className="mx-3 mt-6 p-4 bg-teal-500/10 border border-teal-500/20 rounded-xl space-y-3">
+            <div className="flex items-center gap-3 text-left">
+              <div className="relative">
+                <div className="w-10 h-10 bg-gradient-to-tr from-teal-500 to-teal-400 rounded-full flex items-center justify-center font-bold text-slate-900 text-sm shadow-inner">SJ</div>
+                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 border-[3px] border-slate-900 rounded-full" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[9px] font-black text-teal-400 uppercase tracking-[0.2em] mb-0.5">Active Patient</p>
+                <p className="text-xs font-bold truncate text-white">Sarah Johnson</p>
               </div>
             </div>
-          )}
-
-          {/* Step 3: Time */}
-          {selectedDate !== null && (
-            <div>
-              <p className="text-text-muted text-xs uppercase tracking-wider mb-3 font-medium">3. Pick a time</p>
-              <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-                {timeSlots.map((t) => {
-                  const isUnavailable = unavailable.has(t);
-                  return (
-                    <button
-                      key={t}
-                      disabled={isUnavailable}
-                      onClick={() => setSelectedTime(t)}
-                      className={`py-2 rounded-lg border text-sm font-medium transition-all ${
-                        isUnavailable
-                          ? "border-navy-800 bg-navy-950/30 text-text-muted/30 cursor-not-allowed line-through"
-                          : selectedTime === t
-                          ? "border-gold bg-gold/10 text-gold-light"
-                          : "border-navy-700 bg-navy-900/50 text-text-muted hover:border-gold/50"
-                      }`}
-                    >
-                      {t}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Confirm */}
-          {selectedTime && (
-            <button
-              onClick={handleBook}
-              className="w-full bg-gradient-to-r from-gold-light to-gold-dark text-navy-950 py-3.5 rounded-xl font-semibold text-lg transition-all hover:scale-[1.02] hover:shadow-[0_10px_20px_rgba(217,165,92,0.3)] flex items-center justify-center gap-2"
-            >
-              <CheckCircle size={18} /> Confirm Booking
+            <button className="w-full py-2 text-[9px] font-black bg-white/5 hover:bg-white/10 text-teal-100 rounded-lg transition-all uppercase tracking-widest border border-white/5">
+              Switch Patient
             </button>
-          )}
+          </div>
+
+          <nav className="p-4 space-y-1 flex-1 overflow-y-auto text-left">
+            {crmNavItems.map((item) => (
+              <button
+                key={item.name}
+                onClick={() => { if (!item.locked) setActiveNav(item.name); }}
+                className={`group flex items-center justify-between gap-2.5 px-3 py-2.5 rounded-lg transition-all w-full relative overflow-hidden text-left ${
+                  activeNav === item.name
+                    ? "bg-teal-600 text-white shadow-lg shadow-teal-600/20"
+                    : item.locked
+                    ? "text-slate-600 cursor-not-allowed opacity-50"
+                    : "text-slate-400 hover:bg-white/5 hover:text-white"
+                }`}
+              >
+                <div className="flex items-center gap-2.5 relative z-10">
+                  <item.icon size={17} className={activeNav === item.name ? "text-white" : "text-slate-500 group-hover:text-teal-400"} />
+                  <span className="font-bold text-xs tracking-wide">{item.name}</span>
+                </div>
+                {item.locked && <Lock size={12} className="text-slate-700" />}
+                {item.admin && <span className="text-[8px] font-black text-teal-500 uppercase">Admin</span>}
+              </button>
+            ))}
+          </nav>
+
+          <div className="p-4 border-t border-slate-800 shrink-0">
+            <div className="flex items-center justify-between px-3">
+              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Support</span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest">v1.2.1</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Mobile sidebar overlay */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden" onClick={() => setSidebarOpen(false)} />
+        )}
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          {/* Top Navbar */}
+          <header className="h-14 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 shrink-0">
+            <div className="flex items-center gap-3">
+              <button className="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                <MenuIcon size={20} />
+              </button>
+              <div className="hidden md:flex relative group w-56 lg:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-teal-500 transition-colors" size={15} />
+                <input type="text" placeholder="Search global records..." className="w-full bg-slate-100 border-2 border-transparent focus:bg-white focus:border-teal-500/20 rounded-xl py-2 pl-9 pr-3 text-xs outline-none transition-all placeholder:text-slate-400" />
+              </div>
+            </div>
+            <div className="flex items-center gap-2 lg:gap-4">
+              <div className="flex items-center gap-1">
+                <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-xl transition-all relative group">
+                  <Bell size={17} className="group-hover:rotate-12 transition-transform" />
+                  <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full border border-white" />
+                </button>
+              </div>
+              <div className="h-6 w-[1px] bg-slate-200 hidden sm:block" />
+              <div className="relative">
+                <button onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)} className="flex items-center gap-2 p-1 pr-2 hover:bg-slate-100 rounded-xl transition-all group">
+                  <div className="w-8 h-8 bg-gradient-to-br from-slate-800 to-slate-900 text-teal-400 rounded-lg flex items-center justify-center font-black text-xs shadow-lg shadow-slate-200">A</div>
+                  <div className="text-left hidden sm:block min-w-0">
+                    <p className="text-[10px] font-black text-slate-900 uppercase tracking-tight">Admin</p>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">admin@clinic.co.uk</p>
+                  </div>
+                  <ChevronDown size={12} className={`text-slate-400 transition-transform duration-300 ${isUserDropdownOpen ? "rotate-180" : ""}`} />
+                </button>
+                <AnimatePresence>
+                  {isUserDropdownOpen && (
+                    <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border border-slate-100 p-1.5 z-50">
+                      <div className="p-2.5 mb-1 bg-slate-50 rounded-lg">
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] mb-0.5">Clinic Access</p>
+                        <p className="text-[10px] font-bold text-slate-900 truncate">admin@clinic.co.uk</p>
+                      </div>
+                      <button className="flex items-center gap-2 w-full p-2 text-xs font-bold text-slate-600 hover:bg-slate-50 rounded-lg transition-colors text-left">
+                        <User size={14} className="text-slate-400" />
+                        Role: Admin
+                      </button>
+                      <div className="h-[1px] bg-slate-100 my-1 mx-1.5" />
+                      <button className="flex items-center gap-2 w-full p-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition-colors text-left">
+                        <Lock size={14} />
+                        Lock Session
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+          </header>
+
+          {/* Dashboard Content */}
+          <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-5 lg:p-6 bg-[#FBFBFE]">
+            <div className="max-w-[1400px] mx-auto space-y-6 text-left">
+              {/* Title */}
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                  <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Executive Overview</h1>
+                  <p className="text-slate-500 text-xs font-medium">Clinical analytics synchronized in real-time.</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="bg-white border border-slate-200 text-slate-400 px-3 py-1.5 rounded-xl font-bold text-[9px] uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                    Live Cloud Data
+                  </div>
+                  <button className="bg-teal-600 text-white px-4 py-1.5 rounded-xl font-bold text-xs hover:bg-teal-700 transition-all shadow-lg shadow-teal-600/20 flex items-center gap-1.5">
+                    <Plus size={14} />
+                    Add Patient
+                  </button>
+                </div>
+              </div>
+
+              {/* Stat Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                {statCards.map((stat) => (
+                  <div
+                    key={stat.label}
+                    onClick={stat.onClick}
+                    className={`bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all group text-left ${stat.onClick ? "cursor-pointer ring-2 ring-transparent hover:ring-teal-500/20 active:scale-[0.98]" : "cursor-default"}`}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 duration-300 shrink-0 ${colorClass(stat.color, "bg")}`}>
+                        <stat.icon size={20} />
+                      </div>
+                      <div className={`flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${stat.up ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}`}>
+                        {stat.up ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
+                        {stat.change}
+                      </div>
+                    </div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                    <h2 className="text-xl md:text-2xl font-black text-slate-900 mt-0.5">{stat.value}</h2>
+                  </div>
+                ))}
+              </div>
+
+              {/* Charts Row */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+                {/* Revenue Chart */}
+                <div className="lg:col-span-2 bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm text-left">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-sm font-black text-slate-900 tracking-tight">Financial Stream</h3>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">7-Day Revenue Trend</p>
+                    </div>
+                    <div className="bg-teal-50 p-2 rounded-lg text-teal-600"><TrendingUp size={16} /></div>
+                  </div>
+                  <div className="h-[200px] md:h-[240px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={crmRevenueData}>
+                        <defs>
+                          <linearGradient id="colorRevDemo" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#0d9488" stopOpacity={0.1} />
+                            <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                        <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 800 }} dy={10} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 800 }} tickFormatter={(v: number) => `\u00A3${v}`} />
+                        <Tooltip cursor={{ stroke: "#0d9488", strokeWidth: 2 }} contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }} />
+                        <Area type="monotone" dataKey="amount" stroke="#0d9488" strokeWidth={3} fillOpacity={1} fill="url(#colorRevDemo)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Pie Chart */}
+                <div className="bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm text-left">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-sm font-black text-slate-900 tracking-tight">Patient Pipeline</h3>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Lifecycle breakdown</p>
+                    </div>
+                    <div className="bg-indigo-50 p-2 rounded-lg text-indigo-600"><Activity size={16} /></div>
+                  </div>
+                  <div className="h-[200px] md:h-[240px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={crmDistribution} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={8} dataKey="value">
+                          {crmDistribution.map((_, index) => (
+                            <Cell key={`cell-${index}`} fill={CRM_COLORS[index % CRM_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }} />
+                        <Legend verticalAlign="bottom" height={30} iconType="circle" formatter={(value: string) => <span style={{ fontSize: "9px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em", marginLeft: "6px" }}>{value}</span>} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              {/* Appointments + Clinic Pulse */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+                {/* Recent Appointments */}
+                <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden text-left">
+                  <div className="p-4 md:p-5 border-b border-slate-50 flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-black text-slate-900 tracking-tight">Recent Appointments</h3>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Upcoming surgery queue</p>
+                    </div>
+                    <button className="text-teal-600 font-bold text-xs hover:bg-teal-50 px-3 py-1.5 rounded-lg transition-all">View Schedule</button>
+                  </div>
+                  <div className="divide-y divide-slate-50">
+                    {crmAppointments.map((app, i) => (
+                      <div key={i} className="px-4 md:px-5 py-3 flex items-center justify-between hover:bg-slate-50/50 transition-colors group gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center font-black text-slate-400 text-xs group-hover:bg-teal-100 group-hover:text-teal-600 transition-colors shrink-0">
+                            {app.name.split(" ").map((n) => n[0]).join("")}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-bold text-slate-900 text-xs truncate">{app.name}</p>
+                            <p className="text-[10px] font-medium text-slate-500 mt-0.5 truncate">{app.service} &bull; {app.time}</p>
+                          </div>
+                        </div>
+                        <span className={`px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border shrink-0 whitespace-nowrap ${
+                          app.status === "Confirmed" ? "bg-green-50 text-green-700 border-green-100"
+                          : app.status === "In Review" ? "bg-blue-50 text-blue-600 border-blue-100"
+                          : "bg-amber-50 text-amber-600 border-amber-100"
+                        }`}>
+                          {app.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Clinic Pulse */}
+                <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col text-left">
+                  <div className="mb-4">
+                    <h3 className="text-sm font-black text-slate-900 tracking-tight">Clinic Pulse</h3>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Live activity volume</p>
+                  </div>
+                  <div className="flex-1 min-h-[140px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={crmActivityData}>
+                        <Tooltip contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }} />
+                        <Line type="stepAfter" dataKey="patients" stroke="#0d9488" strokeWidth={3} dot={false} />
+                        <Line type="stepAfter" dataKey="bookings" stroke="#6366f1" strokeWidth={3} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-3 shrink-0">
+                    <div className="p-2.5 bg-teal-50 rounded-xl">
+                      <p className="text-[9px] font-black text-teal-600 uppercase tracking-wider mb-0.5">Reg Rate</p>
+                      <p className="text-base font-black text-teal-900">High</p>
+                    </div>
+                    <div className="p-2.5 bg-indigo-50 rounded-xl">
+                      <p className="text-[9px] font-black text-indigo-600 uppercase tracking-wider mb-0.5">Bookings</p>
+                      <p className="text-base font-black text-indigo-900">Steady</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
         </div>
-      )}
+      </div>
+
+      {/* Pending Reports Modal */}
+      <AnimatePresence>
+        {isPendingModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsPendingModalOpen(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" />
+            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative bg-[#FBFBFE] rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden max-h-[80vh] flex flex-col">
+              <div className="p-6 md:p-8 border-b border-slate-100 bg-white flex items-center justify-between gap-4 shrink-0 text-left">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                    <ClipboardCheck className="text-amber-500" size={24} />
+                    Clinical Backlog
+                  </h2>
+                  <p className="text-slate-500 text-xs font-medium mt-1">Detailed breakdown of pending clinical tasks and bottlenecks.</p>
+                </div>
+                <button onClick={() => setIsPendingModalOpen(false)} className="bg-slate-100 text-slate-400 hover:text-slate-900 p-2.5 rounded-xl transition-all shrink-0">
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 text-left">
+                {/* Missing Intakes */}
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 px-1">
+                    <AlertCircle className="text-amber-500 shrink-0" size={15} />
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Missing Medical Assessments ({crmPendingBreakdown.missingIntake.length})</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {crmPendingBreakdown.missingIntake.map((p) => (
+                      <div key={p.id} className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-teal-500/30 transition-all group gap-3">
+                        <span className="font-bold text-slate-700 text-sm">{p.name}</span>
+                        <ChevronRight size={14} className="text-slate-300 group-hover:text-teal-500 transition-colors shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+                </section>
+                {/* Compliance Gap */}
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 px-1">
+                    <PenTool className="text-indigo-500 shrink-0" size={15} />
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Compliance Gap: Missing Contracts ({crmPendingBreakdown.complianceGap.length})</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {crmPendingBreakdown.complianceGap.map((p) => (
+                      <div key={p.id} className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-indigo-500/30 transition-all group gap-3">
+                        <div>
+                          <p className="font-bold text-slate-700 text-sm">{p.name}</p>
+                          <p className="text-[9px] text-slate-400 uppercase font-black">{p.service}</p>
+                        </div>
+                        <ChevronRight size={14} className="text-slate-300 group-hover:text-indigo-500 transition-colors shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+                </section>
+                {/* Unpaid Balances */}
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 px-1">
+                    <DollarSign className="text-red-500 shrink-0" size={15} />
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Unpaid Post-Op Balances ({crmPendingBreakdown.unpaidBalances.length})</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {crmPendingBreakdown.unpaidBalances.map((p) => (
+                      <div key={p.id} className="flex items-center justify-between p-3 bg-red-50/30 border border-red-100 rounded-xl shadow-sm hover:bg-red-50 transition-all group gap-3">
+                        <span className="font-bold text-slate-700 text-sm">{p.name}</span>
+                        <span className="font-black text-red-600 text-xs">{"\u00A3"}{p.balance.toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+                {/* Post-Op Follow-ups */}
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 px-1">
+                    <Activity className="text-teal-500 shrink-0" size={15} />
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Recent Surgery Follow-ups ({crmPendingBreakdown.postOpFollowups.length})</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {crmPendingBreakdown.postOpFollowups.map((p) => (
+                      <div key={p.id} className="flex items-center justify-between p-3 bg-teal-50/30 border border-teal-100 rounded-xl shadow-sm hover:bg-teal-50 transition-all group gap-3">
+                        <div>
+                          <p className="font-bold text-slate-700 text-sm">{p.name}</p>
+                          <p className="text-[9px] text-teal-600 uppercase font-black">{p.service} &bull; {p.date}</p>
+                        </div>
+                        <UserCheck size={14} className="text-teal-500 shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+                </section>
+                {/* Booking Bottleneck */}
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 px-1">
+                    <Clock className="text-orange-500 shrink-0" size={15} />
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Booking Bottleneck: Date Not Set ({crmPendingBreakdown.bookingBottleneck.length})</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {crmPendingBreakdown.bookingBottleneck.map((p) => (
+                      <div key={p.id} className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-orange-500/30 transition-all group gap-3">
+                        <span className="font-bold text-slate-700 text-sm">{p.name}</span>
+                        <ChevronRight size={14} className="text-slate-300 group-hover:text-orange-500 transition-colors shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
