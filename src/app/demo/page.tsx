@@ -122,7 +122,7 @@ function AIVideoDemo() {
   );
 }
 
-// ─── CRM Dashboard Demo (Cosmetic Star) ────────────────────────────────────
+// ─── CRM Dashboard Demo (Clinic Management) ────────────────────────────────
 
 const CRM_COLORS = ["#0d9488", "#6366f1", "#10b981", "#f59e0b"];
 
@@ -186,13 +186,13 @@ const crmPendingBreakdown = {
 };
 
 const crmNavItems = [
-  { name: "Dashboard", icon: LayoutDashboard, active: true },
+  { name: "Dashboard", icon: LayoutDashboard },
   { name: "Patients", icon: Users },
-  { name: "Assessment", icon: ClipboardCheck, locked: true },
-  { name: "Treatments", icon: FileText, locked: true },
-  { name: "Contract", icon: PenTool, locked: true },
-  { name: "Calendar", icon: Calendar, locked: true },
-  { name: "Financials", icon: DollarSign, locked: true },
+  { name: "Assessment", icon: ClipboardCheck },
+  { name: "Treatments", icon: FileText },
+  { name: "Contract", icon: PenTool },
+  { name: "Calendar", icon: Calendar },
+  { name: "Financials", icon: DollarSign },
   { name: "Service Manager", icon: Settings2, admin: true },
   { name: "Form Designer", icon: ClipboardCheck, admin: true },
   { name: "Settings", icon: Settings, admin: true },
@@ -249,7 +249,7 @@ function BookingSystemDemo() {
               <div className="w-9 h-9 bg-gradient-to-br from-teal-400 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/20">
                 <StarIcon className="text-white fill-white" size={20} />
               </div>
-              <span className="text-base font-black tracking-tight text-white uppercase italic">Cosmetic <span className="text-teal-400">Star</span></span>
+              <span className="text-base font-black tracking-tight text-white uppercase italic">Med<span className="text-teal-400">Flow</span></span>
             </div>
           </div>
 
@@ -274,12 +274,10 @@ function BookingSystemDemo() {
             {crmNavItems.map((item) => (
               <button
                 key={item.name}
-                onClick={() => { if (!item.locked) setActiveNav(item.name); }}
+                onClick={() => setActiveNav(item.name)}
                 className={`group flex items-center justify-between gap-2.5 px-3 py-2.5 rounded-lg transition-all w-full relative overflow-hidden text-left ${
                   activeNav === item.name
                     ? "bg-teal-600 text-white shadow-lg shadow-teal-600/20"
-                    : item.locked
-                    ? "text-slate-600 cursor-not-allowed opacity-50"
                     : "text-slate-400 hover:bg-white/5 hover:text-white"
                 }`}
               >
@@ -287,7 +285,6 @@ function BookingSystemDemo() {
                   <item.icon size={17} className={activeNav === item.name ? "text-white" : "text-slate-500 group-hover:text-teal-400"} />
                   <span className="font-bold text-xs tracking-wide">{item.name}</span>
                 </div>
-                {item.locked && <Lock size={12} className="text-slate-700" />}
                 {item.admin && <span className="text-[8px] font-black text-teal-500 uppercase">Admin</span>}
               </button>
             ))}
