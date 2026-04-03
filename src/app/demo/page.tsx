@@ -23,12 +23,9 @@ import { fadeInUp, staggerContainer } from "@/lib/animations";
 
 // ─── AI Video Generator Demo ───────────────────────────────────────────────
 const promptOptions = [
-  { id: "prompt-1", label: "Placeholder prompt 1", videoUrl: "" },
-  { id: "prompt-2", label: "Placeholder prompt 2", videoUrl: "" },
-  { id: "prompt-3", label: "Placeholder prompt 3", videoUrl: "" },
-  { id: "prompt-4", label: "Placeholder prompt 4", videoUrl: "" },
-  { id: "prompt-5", label: "Placeholder prompt 5", videoUrl: "" },
-  { id: "prompt-6", label: "Placeholder prompt 6", videoUrl: "" },
+  { id: "medical", label: "Precision needle injection — clinical procedure", videoUrl: "/videos/Medical.mp4" },
+  { id: "educational", label: "Hyperspectral imaging — spectral band analysis", videoUrl: "/videos/Explainer_Video.mp4" },
+  { id: "brand", label: "StarTeck — AI services brand showcase", videoUrl: "/videos/Brand_Marketing.mp4" },
 ];
 
 function AIVideoDemo() {
