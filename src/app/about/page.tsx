@@ -35,6 +35,15 @@ export default function AboutPage() {
           >
             {company.description}
           </motion.p>
+          <motion.p
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            className="text-gold-light mt-4 font-medium"
+          >
+            Headquartered in Manchester, UK, we are dedicated to driving innovation
+            within the region&apos;s thriving tech ecosystem.
+          </motion.p>
         </div>
       </section>
 
