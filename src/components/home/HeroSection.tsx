@@ -13,6 +13,13 @@ export default function HeroSection() {
         animate="visible"
         className="flex flex-col items-center"
       >
+        <motion.div
+          variants={fadeInUp}
+          className="mb-4 px-4 py-1 rounded-full border border-gold/30 bg-gold/5 text-gold-light text-xs font-bold uppercase tracking-widest"
+        >
+          AI Engineering &bull; Manchester, UK
+        </motion.div>
+
         <motion.h1
           variants={fadeInUp}
           className="font-serif text-4xl md:text-6xl lg:text-7xl max-w-4xl leading-[1.1]"
