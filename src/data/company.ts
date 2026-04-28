@@ -2,6 +2,9 @@ export const company = {
   name: "StarTeck",
   tagline: "Customized AI Products. Engineered for Excellence.",
   email: "info@starteck.co.uk",
+  phone: "+44 7828186831",
+  address: "2 Urmston Lane, Stretford, Manchester, M32 9BP",
+  mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2376.267885614492!2d-2.3141703000000002!3d53.4457974!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487bad9c659bd00b%3A0xa8b5592d7ca3296f!2sStar%20Tutoring!5e0!3m2!1sen!2sin!4v1777360296523!5m2!1sen!2sin",
   parent: "StarFM",
   description:
     "StarTeck is the dedicated technology and AI innovation arm of StarFM. We specialize in designing, engineering, and deploying Customized AI Products that solve complex business challenges.",

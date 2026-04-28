@@ -39,19 +39,29 @@ export default function ContactPage() {
         >
           <motion.div variants={fadeInUp} className="glass-card p-6">
             <Mail className="w-6 h-6 text-gold mb-3" />
-            <h3 className="font-semibold text-text-main mb-1">Email</h3>
-            <a
-              href={`mailto:${company.email}`}
-              className="text-text-muted hover:text-gold transition-colors text-sm"
-            >
-              {company.email}
-            </a>
+            <h3 className="font-semibold text-text-main mb-1">Contact Details</h3>
+            <div className="flex flex-col gap-2">
+              <a
+                href={`mailto:${company.email}`}
+                className="text-text-muted hover:text-gold transition-colors text-sm"
+              >
+                {company.email}
+              </a>
+              <a
+                href={`tel:${company.phone}`}
+                className="text-text-muted hover:text-gold transition-colors text-sm"
+              >
+                {company.phone}
+              </a>
+            </div>
           </motion.div>
 
           <motion.div variants={fadeInUp} className="glass-card p-6">
             <MapPin className="w-6 h-6 text-gold mb-3" />
             <h3 className="font-semibold text-text-main mb-1">Headquarters</h3>
-            <p className="text-text-muted text-sm">United Kingdom</p>
+            <p className="text-text-muted text-sm leading-relaxed">
+              {company.address}
+            </p>
           </motion.div>
 
           <motion.div variants={fadeInUp} className="glass-card p-6">
