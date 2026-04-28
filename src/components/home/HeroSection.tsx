@@ -46,6 +46,21 @@ export default function HeroSection() {
           </Link>
         </motion.div>
 
+        {/* Branding Video */}
+        <motion.div
+          variants={fadeInUp}
+          className="mt-16 w-full max-w-4xl mx-auto rounded-2xl overflow-hidden border border-gold/20 shadow-[0_0_50px_rgba(217,165,92,0.15)] bg-navy-900/50"
+        >
+          <video
+            src="/videos/Brand_Marketing.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
+
         <motion.div
           variants={fadeInUp}
           className="mt-16 text-gold text-sm tracking-[3px] uppercase animate-bounce"
