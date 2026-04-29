@@ -41,7 +41,26 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_GB",
     url: "https://www.starteck.co.uk",
-    siteName: "StarTeck",
+    siteName: "StarTeck | Manchester AI Development",
+    title: "StarTeck | AI Development Company Manchester, UK",
+    description: "Manchester's leading AI innovation boutique. We build bespoke Agentic AI, Secure RAG systems, and custom enterprise automation.",
+    images: [
+      {
+        url: "/images/logo/StarTeck_logo_transparent.png",
+        width: 1200,
+        height: 630,
+        alt: "StarTeck Manchester AI Development",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "StarTeck | AI Development Manchester",
+    description: "Bespoke AI Engineering & Digital Transformation in Manchester, UK.",
+    images: ["/images/logo/StarTeck_logo_transparent.png"],
+  },
+  alternates: {
+    canonical: "https://www.starteck.co.uk",
   },
 };
 

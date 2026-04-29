@@ -28,7 +28,7 @@ export default function Logo({ size = "md", className = "" }: LogoProps) {
       >
         <Image
           src="/images/logo/StarTeck_logo_transparent.png"
-          alt="StarTeck"
+          alt="StarTeck - AI Development Company Manchester"
           width={dims.width}
           height={dims.height}
           className="object-contain"
